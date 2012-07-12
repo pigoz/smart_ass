@@ -1,5 +1,5 @@
 require "smart_ass/version"
 
 module SmartAss
-  # Your code goes here...
+  autoload :RGBAColor, 'smart_ass/rgba_color'
 end
