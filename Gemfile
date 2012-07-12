@@ -1,4 +1,6 @@
 source 'https://rubygems.org'
 
-# Specify your gem's dependencies in smart_ass.gemspec
 gemspec
+
+gem 'rspec', '~> 2.11.0'
+gem 'rr',    '~> 1.0.4'
