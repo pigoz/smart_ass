@@ -21,4 +21,7 @@ class SmartAss::RGBAColor
   def components
     [@r, @g, @b, @a]
   end
+
+  def to_ycbcr(colormatix)
+  end
 end
