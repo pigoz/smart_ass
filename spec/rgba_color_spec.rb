@@ -35,6 +35,9 @@ describe SmartAss::RGBAColor do
     it "returns ass repesentation" do
       c = SmartAss::RGBAColor.from_argb(0x00, 0xff, 0xff, 0xff)
       c.to_ass.should == "&H00FFFFFF"
+
+      c = SmartAss::RGBAColor.from_rgba(*[0xff, 0xff, 0xff] + [0x00])
+      c.to_ass.should == "&H00FFFFFF"
     end
   end
 end

@@ -16,8 +16,9 @@ class SmartAss::Ass
 
   # TODO: test this!
   def extract(track_id)
-    `mkvextract tracks #{expanded_file} #{track_id}:#{export_temp_file}`
-    IO.read(export_temp_file).tap {|_| File.delete(export_temp_file) }
+    puts `mkvextract tracks "#{expanded_file}" #{track_id}:#{export_temp_file}`
+    IO.read(export_temp_file, :encoding => 'UTF-8') \
+      .tap {|_| File.delete(export_temp_file) }
   end
 
   private

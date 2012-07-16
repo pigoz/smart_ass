@@ -48,20 +48,27 @@ class SmartAss::YCbCrColorMatrix
   # RGB(digital) -> YCbCr Equation
   def to_ycbcr_from_rgb(*rgb)
     apply_equation(*rgb) do |*rgb|
-      offset_vector + (to_ycbcr_matrix_from_rgbd * 1.0 / 256.0)
-        * Matrix.column_vector(rgb)
+      offset_vector + (to_ycbcr_matrix_from_rgbd * 1.0 / 256.0) *
+        Matrix.column_vector(rgb)
     end
   end
 
   # YCbCr -> RGB(digital) Equation
   def to_rgb_from_ycbcr(*ycbcr)
-    apply_equation(*ycbcr) do |*ycbcr|
+    r = apply_equation(*ycbcr) do |*ycbcr|
       (to_rgbd_matrix_from_ycbcr * 1.0 / 256.0) *
         (Matrix.column_vector(ycbcr) - offset_vector)
     end.map(&:round)
+
+    clip_rgb(r)
   end
 
   private
+  def clip_rgb(input)
+    input.map {|n| n >= 0 ? n : 0}
+         .map {|n| n <= 255 ? n : 255}
+  end
+
   def offset_vector
     Matrix.column_vector([16.0, 128.0, 128.0])
   end
