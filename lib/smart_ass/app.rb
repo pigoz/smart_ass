@@ -22,18 +22,24 @@ class SmartAss::App
   end
 
   def convert_color(c)
-    color = SmartAss::RGBAColor.from_ass(c)
+    @_colors_cache ||= Hash.new
 
-    bt601 = SmartAss::YCbCrConverter.new(:bt601)
-    bt709 = SmartAss::YCbCrConverter.new(:bt709)
+    unless @_colors_cache[c]
+      color = SmartAss::RGBAColor.from_ass(c)
 
-    ycbcr = bt601.to_ycbcr(*color.rgb_components)
-    rgb = bt709.to_rgb(*ycbcr)
+      bt601 = SmartAss::YCbCrConverter.new(:bt601)
+      bt709 = SmartAss::YCbCrConverter.new(:bt709)
 
-    puts "[converted color] ass-hex: #{c}, rgb: #{color.rgb_components}, " \
-         "ycbcr: #{ycbcr}, mangled-rgb: #{rgb}"
+      ycbcr = bt601.to_ycbcr(*color.rgb_components)
+      rgb = bt709.to_rgb(*ycbcr)
 
-    SmartAss::RGBAColor.from_rgba(*rgb).to_ass
+      puts "[converted color] ass-hex: #{c}, rgb: #{color.rgb_components}, " \
+           "ycbcr: #{ycbcr}, mangled-rgb: #{rgb}"
+
+      @_colors_cache[c] = SmartAss::RGBAColor.from_rgba(*rgb).to_ass
+    end
+
+    @_colors_cache[c]
   end
 
   def track
