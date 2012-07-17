@@ -18,11 +18,7 @@ class SmartAss::App
   end
 
   def replace_colors(ass_script)
-    [/&H[\da-zA-Z]{6}/, /&H[\da-zA-Z]{8}/].each do |color_regexp|
-      ass_script.gsub!(color_regexp) {|c| convert_color(c) }
-    end
-
-    ass_script
+    ass_script.gsub(/&H[\da-zA-Z]{6,8}/) {|c| convert_color(c)}
   end
 
   def convert_color(c)
