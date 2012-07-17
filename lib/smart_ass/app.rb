@@ -30,7 +30,7 @@ class SmartAss::App
     ycbcr = bt601.to_ycbcr(*color.rgb_components)
     rgb = bt709.to_rgb(*ycbcr)
 
-    puts "[cache color] hex: #{c}, rgb: #{color.rgb_components}, " \
+    puts "[converted color] ass-hex: #{c}, rgb: #{color.rgb_components}, " \
          "ycbcr: #{ycbcr}, mangled-rgb: #{rgb}"
 
     SmartAss::RGBAColor.from_rgba(*rgb).to_ass
