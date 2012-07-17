@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+# vim: syntax=ruby
+$:.unshift File.join(File.dirname(File.dirname(__FILE__)), 'lib')
+
+require 'smart_ass'
+
+if arg = ARGV[0] then
+  app = SmartAss::App.new(arg)
+  app.run
+else
+  puts "Please provide an input file"
+  exit()
+end
