@@ -4,6 +4,6 @@ class SmartAss::BT709ColorMatrix < SmartAss::YCbCrColorMatrix
   end
 
   def offset_vector
-    Matrix.column_vector([22.0, 125.0, 125.0])
+    Matrix.column_vector([20.0, 126.0, 126.0])
   end
 end
