@@ -22,7 +22,7 @@ class SmartAss::YCbCrColorMatrix
 
   # YPbPr -> RGB []
   def to_rgb_matrix_from_ypbpr
-    zeros to_ypbpr_matrix_from_rgb.inverse
+    to_ypbpr_matrix_from_rgb.inverse
   end
 
   # RGB -> YCbCr []
@@ -32,32 +32,32 @@ class SmartAss::YCbCrColorMatrix
 
   # YCbCr -> RGB []
   def to_rgb_matrix_from_ycbcr
-    zeros to_ycbcr_matrix_from_rgb.inverse
+    to_ycbcr_matrix_from_rgb.inverse
   end
 
   # RGB(digital) -> YCbCr []
   def to_ycbcr_matrix_from_rgbd
-    scale_rows to_ycbcr_matrix_from_rgb, *[256.0/255.0]*3
+    scale_rows to_ycbcr_matrix_from_rgb, *[1.0/255.0]*3
   end
 
   # YCbCr -> RGB(digital) []
   def to_rgbd_matrix_from_ycbcr
-    scale_rows zeros(to_ycbcr_matrix_from_rgbd.inverse), *[256.0*256.0]*3
+    to_ycbcr_matrix_from_rgbd.inverse
   end
 
   # RGB(digital) -> YCbCr Equation
   def to_ycbcr_from_rgb(*rgb)
-    apply_equation(*rgb) do |*rgb|
-      offset_vector + (to_ycbcr_matrix_from_rgbd * 1.0 / 256.0) *
-        Matrix.column_vector(rgb)
+    r = apply_equation(*rgb) do |*rgb|
+      offset_vector + (to_ycbcr_matrix_from_rgbd * Matrix.column_vector(rgb))
     end
+
+    clip_ycbcr(r)
   end
 
   # YCbCr -> RGB(digital) Equation
   def to_rgb_from_ycbcr(*ycbcr)
     r = apply_equation(*ycbcr) do |*ycbcr|
-      (to_rgbd_matrix_from_ycbcr * 1.0 / 256.0) *
-        (Matrix.column_vector(ycbcr) - offset_vector)
+      to_rgbd_matrix_from_ycbcr * (Matrix.column_vector(ycbcr) - offset_vector)
     end.map(&:round)
 
     clip_rgb(r)
@@ -65,8 +65,33 @@ class SmartAss::YCbCrColorMatrix
 
   private
   def clip_rgb(input)
-    input.map {|n| n >= 0 ? n : 0}
-         .map {|n| n <= 255 ? n : 255}
+    input.map {|n| clip_component(n, 0, 255)}
+  end
+
+  def clip_ycbcr(input)
+    [
+      clip_component(input[0], *y_minmax),
+      clip_component(input[1], *cbcr_minmax),
+      clip_component(input[2], *cbcr_minmax)
+    ]
+  end
+
+  def clip_component(c, min, max)
+    if c < min
+      min
+    elsif c > max
+      max
+    else
+      c
+    end
+  end
+
+  def y_minmax
+    [16.0, 235.0]
+  end
+
+  def cbcr_minmax
+    [16.0, 240.0]
   end
 
   def offset_vector
@@ -82,15 +107,5 @@ class SmartAss::YCbCrColorMatrix
     Matrix[*factors.each_with_index.map{|factor, index|
       matrix.row(index) * factor
     }]
-  end
-
-  def zeros(matrix)
-    matrix.map {|n|
-      if n < 1e-5 and n > -1e-5 then
-        0.0
-      else
-        n
-      end
-    }
   end
 end
