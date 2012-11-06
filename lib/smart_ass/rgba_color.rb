@@ -2,13 +2,23 @@ class SmartAss::RGBAColor
   attr_reader :r, :g, :b, :a
 
   def self.from_ass(string)
-    argb_hex = string.gsub(/^&H/, '')
-    components = argb_hex.scan(/.{2}/).map {|h| h.to_i(16)}
-    if components.size == 4
-      from_argb(*components)
+    abgr_hex   = string.gsub(/^&H/, '')
+    components = abgr_hex.scan(/.{2}/).map {|h| h.to_i(16)}
+
+    if components.size >= 4
+      from_abgr(*components)
     else
-      from_rgba(*components)
+      from_bgr(*components)
     end
+  end
+
+  def self.from_abgr(*components)
+    argb = [components[0], components[1..3].reverse].flatten
+    from_argb(*argb)
+  end
+
+  def self.from_bgr(*components)
+    from_rgba(*components.reverse)
   end
 
   def self.from_argb(*components)
@@ -20,7 +30,7 @@ class SmartAss::RGBAColor
   end
 
   def to_ass
-    hex = argb_components
+    hex = abgr_components
       .map {|c| c.to_s(16)}
       .map {|c| c.rjust(2, "0")}
       .map(&:upcase)
@@ -39,6 +49,11 @@ class SmartAss::RGBAColor
   def argb_components
     c = components
     c.unshift(c.pop)
+  end
+
+  def abgr_components
+    argb = argb_components
+    [argb[0], argb[1..3].reverse].flatten
   end
 
   def rgb_components
