@@ -40,7 +40,7 @@ This is really minimal. To process mkvs:
 
 To process .ass scripts:
 
-    smart_ass --type ass --suffix bt709 path/to/movie.mkv
+    smart_ass --type ass --suffix bt709 path/to/script.ass
 
 ## Contributing
 
