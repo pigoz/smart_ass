@@ -1,9 +1,9 @@
 require "spec_helper"
 
-describe SmartAss::Ass do
+describe SmartAss::MKV do
   subject {
     @file = "path/to/file/movie.mkv"
-    SmartAss::Ass.new(@file)
+    SmartAss::MKV.new(@file)
   }
 
   it "holds onto a file" do

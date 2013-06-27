@@ -34,9 +34,13 @@ Install the Ruby Gem:
 
 ## Usage
 
-This is really minimal. No options for now.
+This is really minimal. To process mkvs:
 
-    smart_ass path/to/movie.mkv
+    smart_ass --type mkv path/to/movie.mkv
+
+To process .ass scripts:
+
+    smart_ass --type ass --suffix bt709 path/to/movie.mkv
 
 ## Contributing
 

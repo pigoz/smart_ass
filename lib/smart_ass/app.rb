@@ -1,20 +1,33 @@
 class SmartAss::App
-  def initialize(file)
-    @ass  = SmartAss::Ass.new(file)
-    @file = Pathname.new(file)
+  def initialize(options, file)
+    if options.type == :ass and not options.suffix
+      raise "Please provide a suffix for the output file!"
+    end
+
+    @ass           = SmartAss::InputFile.from_type(options.type, file)
+    @output_suffix = options.suffix
+    @file          = Pathname.new(file)
   end
 
   def run
     # function composition baby!
-    write_ass_script replace_colors extract track
+    write_ass_script replace_colors @ass.stream
   end
 
   private
   def write_ass_script(ass_script)
-    script_file_basename = "#{@file.basename(@file.extname)}.ass"
-    File.open(@file.expand_path.dirname + script_file_basename, "w") {|f|
+    File.open(@file.expand_path.dirname + output_file_basename, "w") {|f|
       f.puts(ass_script)
     }
+  end
+
+  def output_file_basename
+    name = [
+      @file.basename(@file.extname),
+      @output_suffix
+    ].select{|a| a}.join('-')
+
+    "#{name}.ass"
   end
 
   def replace_colors(ass_script)
@@ -40,28 +53,5 @@ class SmartAss::App
     end
 
     @_colors_cache[c]
-  end
-
-  def track
-    if @ass.tracks.size > 1
-      track = ask_for_track
-    elsif @ass.tracks.size == 1
-      track = @ass.tracks[0]
-    else
-      puts "No ASS tracks found. Aborting."
-      exit
-    end
-  end
-
-  def ask_for_track
-    puts "Please enter a track name - #{@ass.tracks.inspect}:"
-    readline.to_i
-  rescue
-    puts "Invalid track provided. Try again."
-    retry
-  end
-
-  def extract(track_id)
-    @ass.extract(track_id)
   end
 end

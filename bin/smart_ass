@@ -3,11 +3,24 @@
 $:.unshift File.join(File.dirname(File.dirname(__FILE__)), 'lib')
 
 require 'smart_ass'
+require 'optparse'
+require 'ostruct'
 
-if arg = ARGV[0] then
-  app = SmartAss::App.new(arg)
-  app.run
-else
-  puts "Please provide an input file"
-  exit()
+options = OpenStruct.new
+
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: smart_ass [options] <file>"
+  opts.on('--type [TYPE]', SmartAss::InputFile.types,
+          'Type of the file you are trying to process') do |type|
+    options.type = type
+  end
+
+  opts.on('--suffix [STRING]', 'String to append to output file name') do |s|
+    options.suffix = s
+  end
 end
+
+parser.parse!
+
+app = SmartAss::App.new(options, ARGV[0])
+app.run
