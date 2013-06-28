@@ -1,8 +1,8 @@
 class SmartAss::YCbCrConverter
   attr_reader :matrix
 
-  def initialize(matrix)
-    @matrix = SmartAss.const_get("#{matrix.upcase}ColorMatrix".to_sym).new
+  def initialize(matrix, range=:tv)
+    @matrix = SmartAss.const_get("#{matrix.upcase}#{range.upcase}ColorMatrix".to_sym).new
   end
 
   def to_ycbcr(*rgb)

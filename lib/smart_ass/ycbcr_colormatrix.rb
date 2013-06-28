@@ -27,7 +27,7 @@ class SmartAss::YCbCrColorMatrix
 
   # RGB -> YCbCr []
   def to_ycbcr_matrix_from_rgb
-    scale_rows to_ypbpr_matrix_from_rgb, 219.0, 224.0, 224.0
+    scale_rows to_ypbpr_matrix_from_rgb, *excursion_vector
   end
 
   # YCbCr -> RGB []
@@ -84,18 +84,6 @@ class SmartAss::YCbCrColorMatrix
     else
       c
     end
-  end
-
-  def y_minmax
-    [16.0, 235.0]
-  end
-
-  def cbcr_minmax
-    [16.0, 240.0]
-  end
-
-  def offset_vector
-    Matrix.column_vector([16.0, 128.0, 128.0])
   end
 
   def apply_equation(*inputs, &block)
